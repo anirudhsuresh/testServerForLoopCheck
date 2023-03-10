@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>WebSocket Example</title>
+  </head>
+  <body>
+    <h1>WebSocket Example</h1>
+    <div id="messages"></div>
+
+    <script>
+      // Client WebSocket code
+      const ws = new WebSocket('ws://localhost:8080');
+
+      ws.onopen = () => {
+        console.log('WebSocket connection established!');
+        ws.send('Hello Server!');
+      };
+
+      ws.onmessage = (event) => {
+        console.log('Message received from server:', event.data);
+        const messagesDiv = document.getElementById('messages');
+        messagesDiv.innerHTML += `<p>Server: ${event.data}</p>`;
+      };
+
+      // Server WebSocket code
+      const WebSocketServer = require('ws').Server;
+      const wss = new WebSocketServer({ port: 5504 });
+
+      wss.on('connection', (ws) => {
+        console.log('New client connected!');
+
+        ws.on('message', (message) => {
+          console.log('Message received from client:', message);
+          ws.send(`You said: "${message}"`);
+        });
+
+        ws.on('close', () => {
+          console.log('Client disconnected!');
+        });
+      });
+    </script>
+  </body>
+</html>
